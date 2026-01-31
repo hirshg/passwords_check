@@ -60,8 +60,8 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-20 font-sans">
       {/* Header */}
       <header className="bg-gradient-to-r from-indigo-700 to-blue-600 text-white pt-12 pb-24 px-4 text-center">
-        <h1 className="text-5xl md:text-7xl font-extrabold mb-4 tracking-tight">מעבדת הסייבר: עוצמת סיסמאות</h1>
-        <p className="text-indigo-100 text-2xl md:text-3xl max-w-3xl mx-auto font-light">
+        <h1 className="text-5xl md:text-7xl font-extrabold mb-4 tracking-tight">מעבדת הסייבר: חוזק סיסמאות</h1>
+        <p className="text-indigo-100 text-2xl md:text-3xl max-w-5xl mx-auto font-light leading-relaxed">
           בואו נבדוק כמה זמן ייקח להאקרים לפרוץ את המבצר הדיגיטלי שלכם.
         </p>
       </header>
@@ -233,12 +233,12 @@ const App: React.FC = () => {
               </p>
             </div>
 
-            {/* Step 4 */}
+            {/* Step 4 - Improved Passphrase Advice */}
             <div className="flex flex-col bg-slate-50 p-10 rounded-[3rem] border-2 border-slate-100 transition-all hover:shadow-2xl hover:-translate-y-3 group bg-white">
               <div className="text-7xl font-black text-indigo-100 group-hover:text-indigo-200 mb-8 select-none transition-colors">04</div>
               <h4 className="font-black text-indigo-700 text-2xl mb-6">טיפ: Passphrase</h4>
               <p className="text-xl text-slate-600 leading-relaxed italic border-r-8 border-indigo-200 pr-6 font-bold">
-                בחרו 4 מילים אקראיות (עוגה-כלב-ירח). זה קל לזכור ובלתי אפשרי לפריצה!
+                בחרו 4 מילים אקראיות ללא קשר ביניהן (למשל: מחשב-פיצה-חבר-שמים). שילוב כזה קל לזכור אך כמעט בלתי אפשרי לפיצוח!
               </p>
             </div>
 
