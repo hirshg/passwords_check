@@ -1,4 +1,12 @@
 
+export enum StrengthLevel {
+  VERY_WEAK = 'חלשה מאוד',
+  WEAK = 'חלשה',
+  MEDIUM = 'בינונית',
+  STRONG = 'חזקה',
+  VERY_STRONG = 'חזקה מאוד'
+}
+
 export interface PasswordAnalysis {
   strength: StrengthLevel;
   entropy: number;
@@ -10,14 +18,6 @@ export interface PasswordAnalysis {
   hasSymbols: boolean;
   hasHebrew: boolean;
   length: number;
-}
-
-export enum StrengthLevel {
-  VERY_WEAK = 'חלשה מאוד',
-  WEAK = 'חלשה',
-  MEDIUM = 'בינונית',
-  STRONG = 'חזקה',
-  VERY_STRONG = 'חזקה מאוד'
 }
 
 export interface SecurityTips {

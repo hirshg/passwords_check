@@ -1,13 +1,12 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-export async function getSecurityExplanation(password: string, analysis: string) {
+export async function getSecurityExplanation(password: string, strength: string) {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `הסבר לתלמיד כיתה ח' בעברית: מדוע הסיסמא "${password}" קיבלה את הדירוג "${analysis}"? 
+      contents: `הסבר לתלמיד חטיבת ביניים בעברית: מדוע הסיסמה "${password}" קיבלה את הדירוג "${strength}"? 
       התייחס למורכבות, לסוגי תווים ולמהירות שבה מחשבים עובדים היום. 
       תן עצה אחת קונקרטית לשיפור. שמור על טון מעודד ולימודי.`,
       config: {
@@ -27,8 +26,8 @@ export async function getSecurityExplanation(password: string, analysis: string)
   } catch (error) {
     console.error("Gemini Error:", error);
     return {
-      advice: "תמיד כדאי לשלב סוגי תווים שונים.",
-      context: "מחשבים מודרניים יכולים לנסות מיליארדי שילובים בשנייה אחת."
+      advice: "מומלץ לשלב לפחות 12 תווים הכוללים אותיות, מספרים וסימנים מיוחדים.",
+      context: "מחשבים מודרניים יכולים לבצע מיליארדי ניסיונות בשנייה אחת, ולכן סיסמאות פשוטות נפרצות במהירות."
     };
   }
 }

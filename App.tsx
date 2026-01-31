@@ -1,10 +1,9 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { analyzePassword } from './utils/calculations';
 import { getSecurityExplanation } from './services/geminiService';
 import { PasswordAnalysis, StrengthLevel, SecurityTips } from './types';
 
-// Components
 const StrengthBadge: React.FC<{ strength: StrengthLevel }> = ({ strength }) => {
   const colors: Record<StrengthLevel, string> = {
     [StrengthLevel.VERY_WEAK]: 'bg-red-100 text-red-700 border-red-200',
@@ -15,18 +14,18 @@ const StrengthBadge: React.FC<{ strength: StrengthLevel }> = ({ strength }) => {
   };
 
   return (
-    <span className={`px-4 py-1.5 rounded-full text-sm font-bold border ${colors[strength]}`}>
+    <span className={`px-4 py-1.5 rounded-full text-sm font-bold border transition-colors duration-500 ${colors[strength]}`}>
       {strength}
     </span>
   );
 };
 
 const MetricItem: React.FC<{ label: string; active: boolean; icon: string }> = ({ label, active, icon }) => (
-  <div className={`flex items-center gap-2 p-3 rounded-xl transition-all ${active ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-gray-50 text-gray-400 border-gray-100'} border`}>
+  <div className={`flex items-center gap-2 p-3 rounded-xl transition-all duration-300 ${active ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-gray-50 text-gray-400 border-gray-100'} border`}>
     <span className="text-xl">{icon}</span>
     <span className="text-sm font-semibold">{label}</span>
     {active && (
-      <svg className="w-5 h-5 ml-auto text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 mr-auto text-indigo-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
       </svg>
     )}
@@ -35,6 +34,7 @@ const MetricItem: React.FC<{ label: string; active: boolean; icon: string }> = (
 
 const App: React.FC = () => {
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [analysis, setAnalysis] = useState<PasswordAnalysis | null>(null);
   const [tips, setTips] = useState<SecurityTips | null>(null);
   const [loadingTips, setLoadingTips] = useState(false);
@@ -43,13 +43,13 @@ const App: React.FC = () => {
     const result = analyzePassword(password);
     setAnalysis(password.length > 0 ? result : null);
     
-    if (password.length > 0) {
+    if (password.length > 3) {
       const timer = setTimeout(async () => {
         setLoadingTips(true);
         const aiResponse = await getSecurityExplanation(password, result.strength);
         setTips(aiResponse);
         setLoadingTips(false);
-      }, 1000);
+      }, 1500);
       return () => clearTimeout(timer);
     } else {
       setTips(null);
@@ -57,36 +57,44 @@ const App: React.FC = () => {
   }, [password]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-20">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-20 font-sans">
       {/* Header */}
-      <header className="bg-indigo-700 text-white pt-10 pb-20 px-4 text-center">
-        <h1 className="text-4xl font-extrabold mb-2">מעבדת הסייבר: חוזק סיסמאות</h1>
-        <p className="text-indigo-100 text-lg max-w-2xl mx-auto">
-          גלו כמה זמן ייקח למחשב על לפרוץ את הסיסמה שלכם ואיך להפוך אותה למבצר דיגיטלי.
+      <header className="bg-gradient-to-r from-indigo-700 to-blue-600 text-white pt-12 pb-24 px-4 text-center">
+        <h1 className="text-5xl font-extrabold mb-4 tracking-tight">מעבדת הסייבר: עוצמת סיסמאות</h1>
+        <p className="text-indigo-100 text-xl max-w-2xl mx-auto font-light">
+          בואו נבדוק כמה זמן ייקח להאקרים לפרוץ את המבצר הדיגיטלי שלכם.
         </p>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 -mt-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <main className="max-w-5xl mx-auto px-4 -mt-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Input Section */}
-          <div className="lg:col-span-2 space-y-6">
-            <section className="bg-white p-6 rounded-3xl shadow-xl border border-indigo-50">
-              <label className="block text-lg font-bold mb-4 text-slate-700">הזינו סיסמה לבדיקה:</label>
+          <div className="lg:col-span-2 space-y-8">
+            <section className="bg-white p-8 rounded-[2rem] shadow-2xl border border-white/20 backdrop-blur-sm">
+              <div className="flex justify-between items-center mb-6">
+                <label className="text-xl font-bold text-slate-700">הזינו סיסמה לבדיקה:</label>
+                <button 
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-indigo-600 hover:text-indigo-800 text-sm font-semibold flex items-center gap-1 transition-colors"
+                >
+                  {showPassword ? 'הסתר 🙈' : 'הצג 👁️'}
+                </button>
+              </div>
               <div className="relative">
                 <input
-                  type="text"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="למשל: Pa$$w0rd123..."
-                  className="w-full text-2xl p-5 border-2 border-slate-200 rounded-2xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none bg-slate-50 font-mono tracking-wider"
+                  placeholder="למשל: MyS3cureP@ss!"
+                  className="w-full text-2xl p-6 border-2 border-slate-100 rounded-2xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none bg-slate-50/50 font-mono tracking-widest text-center"
                 />
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-bold">
                   {password.length > 0 && <span>{password.length} תווים</span>}
                 </div>
               </div>
               
-              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <MetricItem label="אותיות קטנות" active={analysis?.hasLowercase || false} icon="abc" />
                 <MetricItem label="אותיות גדולות" active={analysis?.hasUppercase || false} icon="ABC" />
                 <MetricItem label="מספרים" active={analysis?.hasNumbers || false} icon="123" />
@@ -97,109 +105,123 @@ const App: React.FC = () => {
             </section>
 
             {analysis && (
-              <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-4">
-                    <span className="text-3xl">💻</span>
+              <section className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="bg-white p-8 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col items-center text-center group hover:scale-[1.02] transition-transform">
+                  <div className="w-20 h-20 bg-blue-50 rounded-3xl flex items-center justify-center mb-6 group-hover:bg-blue-100 transition-colors">
+                    <span className="text-4xl">💻</span>
                   </div>
-                  <h3 className="font-bold text-slate-500 mb-1">מחשב אישי ממוצע</h3>
-                  <p className="text-2xl font-black text-slate-800">{analysis.timePC}</p>
-                  <p className="text-xs text-slate-400 mt-2">מחשב בודד המבצע כמיליארד ניחושים בשנייה</p>
+                  <h3 className="font-bold text-slate-400 uppercase tracking-widest text-xs mb-2">מחשב אישי סטנדרטי</h3>
+                  <p className="text-3xl font-black text-slate-800 leading-tight">{analysis.timePC}</p>
+                  <p className="text-xs text-slate-400 mt-4 leading-relaxed">מחשב בודד המבצע כמיליארד ניסיונות בשנייה אחת</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mb-4">
-                    <span className="text-3xl">🚀</span>
+                <div className="bg-white p-8 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col items-center text-center group hover:scale-[1.02] transition-transform">
+                  <div className="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mb-6 group-hover:bg-indigo-100 transition-colors">
+                    <span className="text-4xl">🚀</span>
                   </div>
-                  <h3 className="font-bold text-slate-500 mb-1">קלאסטר (200 שרתים)</h3>
-                  <p className="text-2xl font-black text-indigo-700">{analysis.timeCluster}</p>
-                  <p className="text-xs text-slate-400 mt-2">רשת שרתים חזקה המבצעת מאות מיליארדי ניחושים</p>
+                  <h3 className="font-bold text-slate-400 uppercase tracking-widest text-xs mb-2">מערך שרתים (קלאסטר)</h3>
+                  <p className="text-3xl font-black text-indigo-700 leading-tight">{analysis.timeCluster}</p>
+                  <p className="text-xs text-slate-400 mt-4 leading-relaxed">רשת של 200 מחשבי-על העובדים במקביל</p>
                 </div>
               </section>
             )}
           </div>
 
-          {/* Sidebar / AI Tips */}
-          <div className="space-y-6">
-            <section className="bg-indigo-900 text-white p-6 rounded-3xl shadow-2xl overflow-hidden relative">
-              <div className="absolute -right-4 -top-4 w-24 h-24 bg-indigo-700 rounded-full blur-3xl opacity-50"></div>
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <span>🛡️</span>
-                ציון בטיחות
+          {/* Sidebar */}
+          <div className="space-y-8">
+            <section className="bg-indigo-900 text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl"></div>
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span className="text-2xl">🛡️</span>
+                דירוג אבטחה
               </h3>
               {analysis ? (
-                <div className="space-y-4">
-                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-indigo-300">חוזק כללי:</span>
+                <div className="space-y-6">
+                   <div className="flex justify-between items-center">
+                    <span className="text-sm text-indigo-200">סטטוס נוכחי:</span>
                     <StrengthBadge strength={analysis.strength} />
                   </div>
-                  <div className="w-full bg-indigo-800 h-3 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-indigo-400 transition-all duration-700"
-                      style={{ 
-                        width: `${Math.min((analysis.entropy / 128) * 100, 100)}%`,
-                        backgroundColor: analysis.strength === StrengthLevel.VERY_STRONG ? '#10b981' : 
-                                        analysis.strength === StrengthLevel.STRONG ? '#34d399' :
-                                        analysis.strength === StrengthLevel.MEDIUM ? '#facc15' : '#f87171'
-                      }}
-                    ></div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-indigo-300">
+                      <span>אנטרופיה (מורכבות)</span>
+                      <span>{Math.round(analysis.entropy)} bits</span>
+                    </div>
+                    <div className="w-full bg-indigo-950 h-4 rounded-full p-1 border border-indigo-800">
+                      <div 
+                        className="h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(255,255,255,0.2)]"
+                        style={{ 
+                          width: `${Math.min((analysis.entropy / 100) * 100, 100)}%`,
+                          backgroundColor: analysis.strength === StrengthLevel.VERY_STRONG ? '#10b981' : 
+                                          analysis.strength === StrengthLevel.STRONG ? '#34d399' :
+                                          analysis.strength === StrengthLevel.MEDIUM ? '#fbbf24' : '#ef4444'
+                        }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
               ) : (
-                <p className="text-indigo-300 text-sm">הזינו סיסמה כדי לקבל ניתוח</p>
+                <div className="text-indigo-300/60 py-4 text-center border-2 border-dashed border-indigo-700/50 rounded-xl">
+                  הזינו סיסמה כדי להתחיל
+                </div>
               )}
             </section>
 
-            <section className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100">
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-indigo-600">
-                <span>💡</span>
-                טיפים מהמומחה (AI)
+            <section className="bg-white p-8 rounded-[2rem] shadow-xl border border-slate-100 relative">
+              <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-indigo-600">
+                <span className="p-2 bg-indigo-50 rounded-lg">💡</span>
+                טיפים מהמומחה
               </h3>
               {loadingTips ? (
-                <div className="space-y-3 animate-pulse">
-                  <div className="h-4 bg-slate-100 rounded w-3/4"></div>
-                  <div className="h-4 bg-slate-100 rounded w-full"></div>
-                  <div className="h-4 bg-slate-100 rounded w-5/6"></div>
+                <div className="space-y-4">
+                  <div className="h-4 bg-slate-100 rounded w-full animate-pulse"></div>
+                  <div className="h-4 bg-slate-100 rounded w-5/6 animate-pulse"></div>
+                  <div className="h-4 bg-slate-100 rounded w-4/6 animate-pulse"></div>
                 </div>
               ) : tips ? (
-                <div className="space-y-4 text-sm leading-relaxed text-slate-600">
-                  <div className="bg-blue-50 p-4 rounded-2xl border-r-4 border-blue-500 italic">
+                <div className="space-y-6 text-base leading-relaxed text-slate-600">
+                  <div className="bg-slate-50 p-5 rounded-2xl border-r-4 border-indigo-500 italic relative">
+                    <span className="absolute -top-3 -right-2 text-3xl opacity-10">"</span>
                     {tips.context}
                   </div>
-                  <div className="font-bold text-slate-800">
-                    העצה שלי: {tips.advice}
+                  <div className="font-bold text-slate-800 flex items-start gap-2">
+                    <span className="text-indigo-500 mt-1">✨</span>
+                    <span>{tips.advice}</span>
                   </div>
                 </div>
               ) : (
-                <p className="text-slate-400 text-sm italic">ממתין לסיסמה...</p>
+                <p className="text-slate-400 text-sm text-center italic py-4">הזינו לפחות 4 תווים לקבלת טיפים מותאמים אישית...</p>
               )}
             </section>
           </div>
 
         </div>
 
-        {/* Educational Footer Section */}
-        <section className="mt-12 bg-white p-8 rounded-3xl shadow-md border border-slate-100">
-          <h2 className="text-2xl font-bold mb-6 text-center text-slate-800 underline decoration-indigo-200 underline-offset-8">איך זה עובד? שיעור קצר בסייבר</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="space-y-2">
-              <h4 className="font-bold text-indigo-600">1. מרחב האפשרויות</h4>
-              <p className="text-sm text-slate-600">ככל שיש יותר סוגי תווים (א-ב, A-Z, 0-9), כך לפורץ יש הרבה יותר שילובים לנסות. הוספת תו אחד בלבד יכולה להכפיל את הזמן הנדרש פי 60!</p>
+        {/* Info Section */}
+        <section className="mt-16 bg-white p-10 rounded-[3rem] shadow-lg border border-slate-100">
+          <h2 className="text-3xl font-bold mb-10 text-center text-slate-800">מדריך הסייבר המהיר</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="relative pl-6">
+              <div className="text-5xl font-black text-indigo-50 absolute -top-4 -right-4 select-none pointer-events-none">01</div>
+              <h4 className="font-bold text-indigo-600 text-lg mb-3">למה סיסמה ארוכה טובה יותר?</h4>
+              <p className="text-sm text-slate-500 leading-relaxed">כל תו שאתם מוסיפים לסיסמה מגדיל את מספר האפשרויות בצורה מעריכית. סיסמה של 12 תווים חזקה פי מיליונים מסיסמה של 8 תווים!</p>
             </div>
-            <div className="space-y-2">
-              <h4 className="font-bold text-indigo-600">2. פריצה בכוח גס (Brute Force)</h4>
-              <p className="text-sm text-slate-600">זו שיטה שבה מחשב מנסה את כל השילובים האפשריים אחד אחרי השני. מחשבים מודרניים מהירים מאוד, ולכן סיסמאות קצרות נפרצות בשבריר שנייה.</p>
+            <div className="relative pl-6">
+              <div className="text-5xl font-black text-indigo-50 absolute -top-4 -right-4 select-none pointer-events-none">02</div>
+              <h4 className="font-bold text-indigo-600 text-lg mb-3">מה זה Brute Force?</h4>
+              <p className="text-sm text-slate-500 leading-relaxed">זו שיטה שבה המחשב פשוט מנחש את כל השילובים האפשריים. ככל שהמחשב חזק יותר, הוא מבצע יותר ניחושים בשנייה אחת.</p>
             </div>
-            <div className="space-y-2">
-              <h4 className="font-bold text-indigo-600">3. כוחו של ה-Cluster</h4>
-              <p className="text-sm text-slate-600">האקרים לא משתמשים רק במחשב אחד. הם מחברים עשרות ומאות מחשבים יחד (כמו ה-Cluster של 200 השרתים שלנו) כדי לעבוד במקביל, מה שמקצר את זמן הפריצה משנים לדקות.</p>
+            <div className="relative pl-6">
+              <div className="text-5xl font-black text-indigo-50 absolute -top-4 -right-4 select-none pointer-events-none">03</div>
+              <h4 className="font-bold text-indigo-600 text-lg mb-3">טיפ המקצוענים: Passphrase</h4>
+              <p className="text-sm text-slate-500 leading-relaxed">במקום סיסמה מסובכת שקשה לזכור, נסו משפט של 4-5 מילים אקראיות. זה יוצר סיסמה ארוכה מאוד שקלה לזיכרון ובלתי אפשרית לפריצה.</p>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="mt-20 text-center text-slate-400 text-xs">
-        &copy; {new Date().getFullYear()} מעבדת הסייבר החינוכית - פותח עבור תלמידי ישראל
+      <footer className="mt-24 text-center text-slate-400 text-sm">
+        <p>&copy; {new Date().getFullYear()} מעבדת הסייבר החינוכית - למטרות לימודיות בלבד</p>
+        <p className="mt-2 text-xs opacity-50">אין להזין סיסמאות אמיתיות שבהן אתם משתמשים באתרים אחרים.</p>
       </footer>
     </div>
   );

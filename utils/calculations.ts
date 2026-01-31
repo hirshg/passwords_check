@@ -1,12 +1,12 @@
 
 import { StrengthLevel, PasswordAnalysis } from '../types';
 
-const GUESSES_PER_SEC_PC = 10 ** 9; // 1 Billion guesses/sec
-const GUESSES_PER_SEC_CLUSTER = 200 * (10 ** 9); // 200 Billion guesses/sec (200 servers)
+const GUESSES_PER_SEC_PC = 10 ** 9; // 1 מיליארד ניחושים לשנייה
+const GUESSES_PER_SEC_CLUSTER = 200 * (10 ** 9); // 200 מיליארד ניחושים לשנייה
 
 export function formatDuration(seconds: number): string {
   if (seconds === 0) return '0 שניות';
-  if (seconds < 1) return 'פחות משנייה';
+  if (seconds < 1) return 'פחות משנייה אחת';
   if (seconds < 60) return `${Math.floor(seconds)} שניות`;
   
   const minutes = seconds / 60;
@@ -41,9 +41,9 @@ export function analyzePassword(password: string): PasswordAnalysis {
   if (hasHebrew) poolSize += 22;
 
   const length = password.length;
-  // Entropy = log2(poolSize^length)
-  const entropy = length > 0 ? Math.log2(Math.pow(poolSize, length)) : 0;
-  const totalCombinations = Math.pow(poolSize, length);
+  // Entropy = length * log2(poolSize)
+  const entropy = length > 0 && poolSize > 0 ? length * Math.log2(poolSize) : 0;
+  const totalCombinations = poolSize > 0 ? Math.pow(poolSize, length) : 0;
 
   const secondsPC = length > 0 ? totalCombinations / GUESSES_PER_SEC_PC : 0;
   const secondsCluster = length > 0 ? totalCombinations / GUESSES_PER_SEC_CLUSTER : 0;
