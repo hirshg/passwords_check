@@ -14,7 +14,7 @@ const StrengthBadge: React.FC<{ strength: StrengthLevel }> = ({ strength }) => {
   };
 
   return (
-    <span className={`px-8 py-3 rounded-full text-2xl font-black border transition-colors duration-500 shadow-md ${colors[strength]}`}>
+    <span className={`px-10 py-4 rounded-full text-3xl font-black border transition-colors duration-500 shadow-lg ${colors[strength]}`}>
       {strength}
     </span>
   );
@@ -61,7 +61,7 @@ const App: React.FC = () => {
       {/* Header */}
       <header className="bg-gradient-to-r from-indigo-700 to-blue-600 text-white pt-12 pb-24 px-4 text-center">
         <h1 className="text-5xl md:text-7xl font-extrabold mb-4 tracking-tight">מעבדת הסייבר: חוזק סיסמאות</h1>
-        <p className="text-indigo-100 text-2xl md:text-3xl max-w-5xl mx-auto font-light leading-relaxed">
+        <p className="text-indigo-100 text-2xl md:text-3xl w-full max-w-none mx-auto font-light leading-relaxed">
           בואו נבדוק כמה זמן ייקח להאקרים לפרוץ את המבצר הדיגיטלי שלכם.
         </p>
       </header>
@@ -139,21 +139,21 @@ const App: React.FC = () => {
               </h3>
               {analysis ? (
                 <div className="space-y-12">
-                   <div className="flex flex-col gap-6 items-center">
-                    <span className="text-2xl text-indigo-200 font-bold">סטטוס נוכחי:</span>
+                   <div className="flex flex-col gap-8 items-center">
+                    <span className="text-3xl text-indigo-200 font-bold">סטטוס נוכחי:</span>
                     <StrengthBadge strength={analysis.strength} />
                   </div>
-                  <div className="space-y-6 pt-10 border-t border-indigo-800/50">
-                    <div className="flex flex-col gap-2">
+                  <div className="space-y-8 pt-10 border-t border-indigo-800/50">
+                    <div className="flex flex-col gap-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-xl text-indigo-100 font-black uppercase tracking-wider">רמת האנטרופיה</span>
-                        <span className="text-4xl font-black text-white">{Math.round(analysis.entropy)} <span className="text-lg text-indigo-300">bits</span></span>
+                        <span className="text-2xl text-indigo-100 font-black uppercase tracking-wider">רמת אנטרופיה</span>
+                        <span className="text-5xl font-black text-white">{Math.round(analysis.entropy)} <span className="text-xl text-indigo-300 font-normal">bits</span></span>
                       </div>
-                      <span className="text-lg text-indigo-300 font-medium italic">(מדד הקושי המדעי לניחוש הסיסמה)</span>
+                      <span className="text-xl text-indigo-300 font-bold italic leading-relaxed bg-indigo-950/40 p-3 rounded-xl">(מדד הקושי המדעי לניחוש הסיסמה על ידי מחשב)</span>
                     </div>
-                    <div className="w-full bg-indigo-950 h-8 rounded-full p-2 border border-indigo-800 shadow-inner">
+                    <div className="w-full bg-indigo-950 h-10 rounded-full p-2 border border-indigo-800 shadow-inner">
                       <div 
-                        className="h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+                        className="h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_25px_rgba(255,255,255,0.5)]"
                         style={{ 
                           width: `${Math.min((analysis.entropy / 100) * 100, 100)}%`,
                           backgroundColor: analysis.strength === StrengthLevel.VERY_STRONG ? '#10b981' : 
@@ -206,21 +206,21 @@ const App: React.FC = () => {
           <h2 className="text-5xl md:text-6xl font-black mb-20 text-center text-slate-800 underline decoration-indigo-200 underline-offset-[16px]">מדריך הסייבר המהיר</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             
-            {/* Step 1 */}
+            {/* Step 1 - Added <br /> for better formatting */}
             <div className="flex flex-col bg-slate-50 p-10 rounded-[3rem] border-2 border-slate-100 transition-all hover:shadow-2xl hover:-translate-y-3 group bg-white">
               <div className="text-7xl font-black text-indigo-100 group-hover:text-indigo-200 mb-8 select-none transition-colors">01</div>
               <h4 className="font-black text-indigo-700 text-2xl mb-6">למה סיסמה ארוכה?</h4>
               <p className="text-xl text-slate-600 leading-relaxed italic border-r-8 border-indigo-200 pr-6 font-bold">
-                אורך הוא הכוח הכי גדול! כל תו נוסף הופך את מספר השילובים לעצום.
+                אורך הוא הכוח הכי גדול! <br /> כל תו נוסף הופך את מספר השילובים לעצום.
               </p>
             </div>
             
             {/* Step 2 */}
             <div className="flex flex-col bg-slate-50 p-10 rounded-[3rem] border-2 border-slate-100 transition-all hover:shadow-2xl hover:-translate-y-3 group bg-white">
               <div className="text-7xl font-black text-indigo-100 group-hover:text-indigo-200 mb-8 select-none transition-colors">02</div>
-              <h4 className="font-black text-indigo-700 text-2xl mb-6">מהי אנטרופיה?</h4>
+              <h4 className="font-black text-indigo-700 text-2xl mb-6">אימות דו-שלבי (MFA)</h4>
               <p className="text-xl text-slate-600 leading-relaxed italic border-r-8 border-indigo-200 pr-6 font-bold">
-                "מדד ההפתעה". ככל שיש יותר סוגי תווים, היא יותר קשה לניחוש ע"י מחשב.
+                גם סיסמה חזקה עלולה להיגנב. הגנה נוספת, כמו קוד שנשלח לנייד, היא הדרך הכי טובה לעצור פריצה בזמן אמת.
               </p>
             </div>
 
@@ -229,16 +229,16 @@ const App: React.FC = () => {
               <div className="text-7xl font-black text-indigo-100 group-hover:text-indigo-200 mb-8 select-none transition-colors">03</div>
               <h4 className="font-black text-indigo-700 text-2xl mb-6">Brute Force?</h4>
               <p className="text-xl text-slate-600 leading-relaxed italic border-r-8 border-indigo-200 pr-6 font-bold">
-                שיטת "ניסוי וטעייה" שבה המחשב מנסה את כל האפשרויות ברצף.
+                שיטת "ניסוי וטעייה" שבה המחשב מנסה את כל האפשרויות ברצף עד להצלחה.
               </p>
             </div>
 
-            {/* Step 4 - Improved Passphrase Advice */}
+            {/* Step 4 */}
             <div className="flex flex-col bg-slate-50 p-10 rounded-[3rem] border-2 border-slate-100 transition-all hover:shadow-2xl hover:-translate-y-3 group bg-white">
               <div className="text-7xl font-black text-indigo-100 group-hover:text-indigo-200 mb-8 select-none transition-colors">04</div>
               <h4 className="font-black text-indigo-700 text-2xl mb-6">טיפ: Passphrase</h4>
               <p className="text-xl text-slate-600 leading-relaxed italic border-r-8 border-indigo-200 pr-6 font-bold">
-                בחרו 4 מילים אקראיות ללא קשר ביניהן (למשל: מחשב-פיצה-חבר-שמים). שילוב כזה קל לזכור אך כמעט בלתי אפשרי לפיצוח!
+                בחרו 4 מילים אקראיות ללא קשר הגיוני (למשל: מחשב-פיצה-חבר-שמים). שילוב כזה קל לזכור אך קשה מאוד לפיצוח!
               </p>
             </div>
 
